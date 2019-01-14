@@ -1,11 +1,11 @@
 
-import difflib
+
 import re
 import json
 import collections
 
 from dependency import DependencyExtraction
-from utils import readFile, findChineseWord
+from utils import readFile, similarity
 
 
 class Opinion(object):
@@ -31,7 +31,7 @@ class OpinionCluster(object):
     def getOpinions(self):
         return self._opinions
 
-    def getSummary(self):
+    def getSummary(self, freqStrLen):
         # 对一个self._opinions生成一个标签，最长的句子，我们认为句子最长的，意思最完整
         maxLenStr = ""
         opinionStrs = []
@@ -41,25 +41,23 @@ class OpinionCluster(object):
             if len(opinion) > len(maxLenStr):
                 maxLenStr = opinion
 
-        return maxLenStr
         # 统计字频率，减去边缘化的字
-        # word_counter = collections.Counter(list("".join(opinionStrs))).most_common()
-        #
-        # newStr = []
-        # maxNum = word_counter[0][1]
-        # charList = list(maxLenStr)
-        # for i, s in enumerate(charList):
-        #     if not findChineseWord(s):
-        #         newStr.append(s)
-        #     # 不处理“能不能”，“是不是”，“有没有”
-        #     elif i > 0 and s in ["不", "没"] and charList[i - 1] in ["能", "是", "有"]:
-        #         newStr.append(s)
-        #     else:
-        #         # 过滤边缘化的字
-        #         for word in word_counter:
-        #             if word[0] == s and word[1] > maxNum / 3:
-        #                 newStr.append(s)
-        # return "".join(newStr)
+        word_counter = collections.Counter(list("".join(opinionStrs))).most_common()
+
+        freqStr = ""
+        for item in word_counter:
+            if item[1] >= freqStrLen:
+                freqStr += item[0]
+
+        maxSim = -1
+        maxOpinion = ""
+        for opinion in opinionStrs:
+            sim = similarity(freqStr, opinion)
+            if sim > maxSim:
+                maxSim = sim
+                maxOpinion = opinion
+
+        return maxOpinion
 
 
 class OpinionExtraction(object):
@@ -152,7 +150,7 @@ class OpinionExtraction(object):
             由于分成了许多小块，再对每个小块做聚类，聚类速度大大提升，[0.2, 0.6]比[0.6]速度高30倍左右。
             但是[0.2, 0.6]和[0.6]最后的结果不是一样的，会把一些相同的观点拆开。
         '''
-        thresholds = [0.2, 0.6]
+        thresholds = self.json_config["thresholds"]
         clusters = [opinionList]
         for threshold in thresholds:
             newClusters = []
@@ -162,8 +160,8 @@ class OpinionExtraction(object):
 
         resMaxLen = {}
         for oc in clusters:
-            if len(oc.getOpinions()) > self.json_config["minClusterLen"]:
-                summaryStr = oc.getSummary()
+            if len(oc.getOpinions()) >= self.json_config["minClusterLen"]:
+                summaryStr = oc.getSummary(self.json_config["freqStrLen"])
                 resMaxLen[summaryStr] = oc.getOpinions()
 
         return self.sortRes(resMaxLen)
@@ -185,6 +183,7 @@ class OpinionExtraction(object):
 
         firstCluster = OpinionCluster()
         for op in opinions:
+            op = op + [""]
             firstCluster.addOpinion(Opinion(*op))
         return firstCluster
 
@@ -215,7 +214,7 @@ class OpinionExtraction(object):
                 opinion2 = opinions[j]
                 if opinion2 in checked1:
                     continue
-                sim = self.similarity(opinion1, opinion2)
+                sim = similarity(opinion1.opinion, opinion2.opinion)
                 if sim > threshold:
                     if opinion2 not in oc.getOpinions():
                         oc.addOpinion(opinion2)
@@ -224,7 +223,6 @@ class OpinionExtraction(object):
         return clusters
 
 
-    def similarity(self, o1, o2):
-        return difflib.SequenceMatcher(a = o1.opinion, b = o2.opinion).quick_ratio()
+
 
 

@@ -11,5 +11,7 @@
     "尽快回复", "订单号",
     "账号", "com", "撤回"],
   "minOpinionLen":4,
-  "minClusterLen":1
+  "minClusterLen":3,
+  "freqStrLen": 4,
+  "thresholds":[0.2, 0.7]
 }

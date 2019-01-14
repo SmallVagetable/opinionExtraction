@@ -1,4 +1,5 @@
 import re
+import difflib
 
 # 判断中文
 def findChineseWord(word):
@@ -19,3 +20,6 @@ def readFile(path):
         for line in f:
             content.append(line.strip())
     return content
+
+def similarity(opinion1, opinion2):
+    return difflib.SequenceMatcher(a = opinion1, b = opinion2).quick_ratio()
