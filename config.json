@@ -1,0 +1,15 @@
+{
+  "dataLen": 10000,
+  "includeWordList":["iphone","mate",
+  "apple"],
+  "exceptWordList":[
+    "文本消息", "消息卡片",
+    "系统提示", "http",
+    "撤回一条消息", "支行",
+    "手机号码", "税号",
+    "订单编号", "什么意思",
+    "尽快回复", "订单号",
+    "账号", "com", "撤回"],
+  "minOpinionLen":4,
+  "minClusterLen":1
+}
