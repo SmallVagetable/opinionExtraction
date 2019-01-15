@@ -6,7 +6,7 @@
 3. 从多个观点中，提取总结性的观点。--getSummary
 
 ## 数据形式
-输入：句子的列表$[sent_1, sent_2,sent_3,...,sent_n]$
+输入：句子的列表\[sent_1, sent_2,sent_3,...,sent_n]\
 
 输出：观点频次从高到低的dict结构，key是一类观点的总结，value是一类观点的list
 
