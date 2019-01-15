@@ -6,7 +6,7 @@
 3. 从多个观点中，提取总结性的观点。--getSummary
 
 ## 数据形式
-输入：句子的列表\[sent_1, sent_2,sent_3,...,sent_n]\
+输入：句子的列表[sent1, sent2,sent3,...,sentn]
 
 输出：观点频次从高到低的dict结构，key是一类观点的总结，value是一类观点的list
 
@@ -20,6 +20,6 @@ main.py
 
 - 相似度的计算方式可以改进
 - 总结观点的提取
-- 观点聚类的算法$O(n^2)$的效率的改进
+- 观点聚类的算法O(n2)的效率的改进
 - pyhanlp中加入自己的词表 https://zhuanlan.zhihu.com/p/35780877
 - pyhanlp中依存关系的提取方式改进
