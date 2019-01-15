@@ -32,16 +32,12 @@ class OpinionCluster(object):
         return self._opinions
 
     def getSummary(self, freqStrLen):
-        # 对一个self._opinions生成一个标签，最长的句子，我们认为句子最长的，意思最完整
-        maxLenStr = ""
         opinionStrs = []
         for op in self._opinions:
             opinion = op.opinion
             opinionStrs.append(opinion)
-            if len(opinion) > len(maxLenStr):
-                maxLenStr = opinion
 
-        # 统计字频率，减去边缘化的字
+        # 统计字频率
         word_counter = collections.Counter(list("".join(opinionStrs))).most_common()
 
         freqStr = ""

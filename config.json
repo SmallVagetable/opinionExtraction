@@ -1,5 +1,5 @@
 {
-  "dataLen": 10000,
+  "dataLen": 1000,
   "includeWordList":["iphone","mate",
   "apple"],
   "exceptWordList":[
